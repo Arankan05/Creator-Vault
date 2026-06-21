@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CREATOR
+  BRAND
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  creatorProfile CreatorProfile?
+  brandProfile   BrandProfile?
+}
+
+model CreatorProfile {
+  id         String  @id @default(cuid())
+  userId     String  @unique
+  bio        String?
+  location   String?
+  niche      String?
+  languages  String?
+  portfolio  String?
+  trustScore Int     @default(0)
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model BrandProfile {
+  id          String  @id @default(cuid())
+  userId      String  @unique
+  companyName String
+  industry    String?
+  description String?
+
+  user User @relation(fields: [userId], references: [id])
+}
